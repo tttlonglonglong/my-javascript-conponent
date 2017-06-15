@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>详细页</title>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+<ul class="box2" id="box2">
+
+</ul>
+<script src="js/ajax.js"></script>
+<script>
+   var detailPage = (function () {
+           var url= window.location.href;
+           var search = window.location.search;
+           var box2 = document.getElementById("box2");
+
+
+        function bindHTML() {
+            var  str = "";
+            str += " <li> <span>编号:</span><span>" + data.id+ "</span> </li>";
+            str += "<li> <span>姓名:</span><span>" + data.name+ "</span> </li>";
+            str += "<li> <span>性别:</span><span>" + (data.sex==0? "男": "女") + "</span></li>";
+            str += "<li> <span>分数:</span><span>" + data.score + "</span> </li>";
+            box2.innerHTML = str;
+
+        }
+        function sendAJAX() {
+            ajax({
+                url: "/getInfo" + search,
+                success: function (jsonData) {
+                    if (jsonData && (jsonData.code == 0)) {
+                        data = jsonData.data;
+                        console.log(data);
+                        bindHTML();
+                    }
+
+                }
+            })
+        }
+       function init() {
+           sendAJAX();
+       }
+        return {init: init}
+   })();
+   detailPage.init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        #div1{
+            width: 100px;
+            height: 100px;
+            background: red;
+            position: absolute;
+        }
+        #div2{
+            width: 100px;
+            height: 100px;
+            background: yellow;
+            position: absolute;
+            left: 200px;
+        }
+        #div3{
+            width: 100px;
+            height: 100px;
+            background: blue;
+            position: absolute;
+            left: 300px;
+        }
+        #div4{
+            width: 100px;
+            height: 100px;
+            background: green;
+            position: absolute;
+            left: 400px;
+        }
+    </style>
+    <script>
+        //1.解决参数顺序问题
+        /*function show(opt){
+
+        };
+        show({
+            id: 'div', //json里面要用逗号
+            toDown: function a(){},
+            toUp: function b() {}
+        })*/
+
+        //2.解决参数没有的问题,使用配置参数
+        /*var a ={
+            name : '小明'//配置参数,有配置参数的时候,走配置参数
+        };
+        var b={
+            name : '小强'//默认参数,
+        };
+
+        extend(b,a);//通过覆盖,当a没有name参数的时候,会默认使用b的参数;当a有参数的时候则会覆盖
+        function ectend(obj1,obj2){
+            for(var attr in obj2){
+                obj1[attr] = obj2[attr];
+            }
+        }*/
+        window.onload = function () {
+            var drag1 = new Drag();
+            drag1.init({ //配置参数
+                id : 'div1',
+            });
+
+            var drag2 = new Drag();
+            drag2.init({ //配置参数
+                id: 'div2',
+                toDown :  function () {
+                    document.title = 'hello';//鼠标按下变为hello
+                }
+            });
+
+            var drag3 = new Drag();
+            drag3.init({ //配置参数
+                id: 'div3',
+                toDown:　function () {
+                    document.title = '好好学习';//鼠标按下和抬起变化
+                },
+                toUp: function(){
+                    document.title = "天天向上";
+                }
+            });
+
+
+            var drag4 = new Drag();
+            drag4.init({
+                id:'div4',
+                toUp: function () {
+                    document.title = 'BYEBYE'; //需要鼠标抬起时变为byebye;
+                }
+            })
+        };
+
+        function Drag (){
+            this.obj =null;
+            this.disX = 0;
+            this.disY = 0;
+            this.setting = {
+               // id: id是必填项;
+                toDown : function (){},
+                toUp : function (){}
+            }
+        }
+
+        Drag.prototype.init = function(opt){
+            this.obj = document.getElementById(opt.id);
+            var This = this;
+            extend(this.setting,opt);
+
+            this.obj.onmousedown = function(ev){
+                var ev = ev || window.event;
+                This.fnDown(ev);
+                This.setting.toDown();
+
+                document.onmousemove = function (ev) {
+                    var ev = ev || window.event;
+                    This.fnMove(ev);
+
+                };
+
+                document.onmouseup = function (ev) {
+                    var ev= ev || event;
+                    This.fnUp(ev);
+                    This.setting.toUp();
+                };
+
+                return false;
+            }
+        };
+        Drag.prototype.fnDown = function (ev) {
+            this.disX = ev.clientX - this.obj.offsetLeft;
+            this.disY = ev.clientY - this.obj.offsetTop;
+            console.log('1')
+        };
+        Drag.prototype.fnMove = function (ev) {
+            this.obj.style.left = ev.clientX - this.disX + 'px';
+            this.obj.style.top = ev.clientY - this.disY + 'px';
+            console.log('2')
+        };
+        Drag.prototype.fnUp = function (ev) {
+            document.onmousemove = null;
+            document.onmouseup = null;
+            console.log('3')
+        };
+        function  extend(obj1,obj2){
+            for(var attr in obj2){
+                obj1[attr] = obj2[attr];
+            }
+        }
+    </script>
+</head>
+<body>
+<div1 id="div1"></div1>
+<div1 id="div2"></div1>
+<div1 id="div3"></div1>
+<div1 id="div4"></div1>
+</body>
+</html>

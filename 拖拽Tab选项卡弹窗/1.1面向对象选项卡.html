@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style type="text/css">
+        .active{
+            background: red;
+        }
+        #div1 div,#div2 div{
+            width: 200px;
+            height: 100px;
+            border:1px solid;
+            display: none;
+        }
+    </style>
+    <script>
+        //1.直接版
+      /* window.onload = function(){
+           var oParent = document.getElementById("div1");
+           var aInput = oParent.getElementsByTagName("input");
+           var aDiv = oParent.getElementsByTagName("div");
+
+           for(var i=0;i<aInput.length;i++){
+               aInput[i].index = i;
+
+               aInput[i].onclick = function(){
+                    for(var i=0;i<aInput.length;i++){
+                        aInput[i].className= '';
+                        aDiv[i].style.display= 'none';
+                    }
+                   this.className = 'active';
+                   aDiv[this.index].style.display = 'block';
+               }
+           }
+       }*/
+         //2.普通方法的变形,1.尽量不出现嵌套函数,2.可以有全局变量,3.onload中不是复制语句的放到单独的函数中
+       /*
+       //将变量写成全局变量
+         var oParent = null;
+         var aInput = null;
+         var aDiv = null;
+         window.onload = function(){
+         oParent = document.getElementById("div1");//这里不能用var声明,在函数里面声明就变成了局部变量
+         aInput = oParent.getElementsByTagName("input");
+         aDiv = oParent.getElementsByTagName("div");
+
+         init();
+
+         };
+
+         function init(){
+         for(var i=0;i<aInput.length;i++){
+         aInput[i].index = i;
+         aInput[i].onclick =change;
+         }
+         }
+
+         function change(){
+         for(var i=0;i<aInput.length;i++){
+         aInput[i].className= '';
+         aDiv[i].style.display= 'none';
+         }
+         this.className = 'active';
+         aDiv[this.index].style.display = 'block';
+         }*/
+
+        //3改成面向对象,1.创建对象,2.全局变量就是对象的属性,3.函数就是对象的方法;4.改this指向的问题,尽量让this指向对象(事件或者定时器,this指向会不一样)
+       /* 1.this = oDiv
+       oDiv.onclick=function(){
+           this: aDiv;
+       };
+        2.this = oDiv
+        oDiv.onclick=show;
+        function show(){
+            this: oDiv;
+        }
+        3.this = window;
+        odiv.onclick= function(){
+            show()
+        }
+        function show(){
+            this: window;
+        }*/
+       /* window.onload = function(){
+           var t1 = new Tab();
+            t1.init();
+
+
+        };
+
+        function Tab(){
+            this.oParent = document.getElementById('div1');
+            this.aInput = this.oParent.getElementsByTagName("input");
+            this.aDiv = this.oParent.getElementsByTagName("div");
+        }
+
+        Tab.prototype.init = function(){
+            var This = this;
+            for(var i=0;i<this.aInput.length;i++){
+                this.aInput[i].index = i;
+                this.aInput[i].onclick = function () {//神来之笔
+                    This.change(this);
+                }
+            }
+        };
+
+        Tab.prototype.change = function (obj) {//这里的6个this,2个是按钮,4个应该是对象
+            for(var i=0;i<this.aInput.length;i++){
+                this.aInput[i].className= '';
+                this.aDiv[i].style.display= 'none';
+            }
+            obj.className = 'active';
+            this.aDiv[obj.index].style.display = 'block';
+        };
+*/
+
+        //4.面向对象方便复用,方法可以组合使用
+        window.onload = function(){
+            var t1 = new Tab('div1');
+            t1.init();
+
+            var t2 = new Tab('div2');
+            t2.init();
+            t2.autoplay();//t2加自动播放效果
+        };
+
+        function Tab(id){
+            this.oParent = document.getElementById(id);
+            this.aInput = this.oParent.getElementsByTagName("input");
+            this.aDiv = this.oParent.getElementsByTagName("div");
+            this.iNow = 0;
+        }
+
+        Tab.prototype.init = function(){
+            var This = this;
+            for(var i=0;i<this.aInput.length;i++){
+                this.aInput[i].index = i;
+                this.aInput[i].onclick = function () {//神来之笔
+                    This.change(this);
+                }
+            }
+        };
+
+        Tab.prototype.change = function (obj) {//这里的6个this,2个是按钮,4个应该是对象
+            for(var i=0;i<this.aInput.length;i++){
+                this.aInput[i].className= '';
+                this.aDiv[i].style.display= 'none';
+            }
+            obj.className = 'active';
+            this.aDiv[obj.index].style.display = 'block';
+        };
+
+        Tab.prototype.autoplay = function () {
+                This = this;
+            setInterval(function(){
+                if(This.iNow == This.aInput.length-1){
+                    This.iNow = 0;
+            }else{
+                    This.iNow++;
+                }
+
+                for(var i=0;i<This.aInput.length;i++){
+                    This.aInput[i].className= '';
+                    This.aDiv[i].style.display= 'none';
+                }
+                This.aInput[This.iNow].className = 'active';
+                This.aDiv[This.iNow].style.display = 'block';
+            },1000)
+        }
+    </script>
+</head>
+<body>
+<div id="div1">
+    <input class="active" type="button" value="1">
+    <input type="button" value="2">
+    <input type="button" value="3">
+    <div style="display:block">11111111111 </div>
+    <div>22222222222 </div>
+    <div>33333333333 </div>
+</div>
+<div id="div2">
+    <input class="active" type="button" value="1">
+    <input type="button" value="2">
+    <input type="button" value="3">
+    <div style="display:block">11111111111 </div>
+    <div>22222222222 </div>
+    <div>33333333333 </div>
+</div>
+</body>
+</html>

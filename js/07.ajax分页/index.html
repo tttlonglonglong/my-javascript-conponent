@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-control" content="no-cache">
+    <title>ajax分页</title>
+    <link rel="stylesheet" href="css/public.css">
+    <link rel="stylesheet" href="css/public.css">
+</head>
+<body>
+<div class="box">
+    <h2>
+        <span>编号</span>
+        <span>姓名</span>
+        <span>性别</span>
+        <span>分数</span>
+    </h2>
+    <ul class="con" id="con">
+       <!-- <li>
+            <span>1</span>
+            <span>xxx</span>
+            <span>男</span>
+            <span>90</span>
+        </li>-->
+
+    </ul>
+    <div class="page" id="page">
+        <span>FIRST</span>
+        <span>PREV</span>
+        <ul class="pageNum" id="pageNum">
+          <!--  <li>1</li>-->
+        </ul>
+        <span>NEXT</span>
+        <span>LAST</span>
+        <input type="text" id="numInp" value="1">
+        <input type="button" id="btn" value="GO">
+    </div>
+</div>
+<script src="js/ajax.js"></script>
+<script>
+    var pageModule = (function () {
+        // 需要获取的dom元素
+        var content = document.getElementById("con");
+        var page = document.getElementById("page");
+        var pageNum = document.getElementById("pageNum");
+        var numInp = document.getElementById("numInp");
+        var btn = document.getElementById("btn");
+        console.log("content", content);
+        //-->设定当前页和总页数以及本次请求回来的数据
+        var n = 1 ;
+        var total = 0;
+        var data = null;
+
+        // 实现页面数据绑定以及其他数据的绑定
+        function bindHTML() {
+            // content:  bind
+            var str = "";
+            for(var i=0; i<data.length;i++){
+                var curDate = data[i];
+                str += '<li studentId="'+ curDate["id"] +'">';
+                str += '<span>'+ curDate["id"] +'</span>';
+                str += '<span>'+ curDate["name"] +'</span>';
+                str += '<span>'+ (curDate["sex"]==1? "女":"男")  +'</span>';
+                str += '<span>'+ curDate["score"] +'</span>';
+                str += '</li>';
+            }
+            content.innerHTML = str;
+
+            //-->pageNUM  bind && show current page
+            str ='';
+            for(i =1; i<=total;i++){
+                if (i == n) { // 点击的按钮变色
+                    str += '<li  class = "bg">'+ i +'</li>';
+                    continue;
+                }
+                str += '<li>'+ i +'</li>';
+            }
+
+            pageNum.innerHTML = str;
+
+            //-->numInp bind
+            numInp.value  = n;
+        }
+
+        //-->sendAjax: 发送 ajax请求
+        function sendAJAX() {
+            ajax({
+                url: "/getList?n=" + n,
+                success: function (jsonDate) {
+                    //console.log(jsonDate);
+                    if(jsonDate && jsonDate.code == 0){
+                        total = jsonDate["total"];
+                        data = jsonDate.data;
+                        console.log(typeof data);
+                        bindHTML(data);
+                        bindLink();// ajax请求发送成功后,才绑定事件
+                    }
+                }
+            })
+        }
+
+        //bindEvent: 实现annuity区域的分页操作 && 给文本框绑定事件
+
+        // bindLnk: content区域的所有li的跳转事件
+        function bindLink() {
+            var oLis = content.getElementsByTagName("li");
+            for(var i = 0; i<oLis.length; i++){
+                oLis[i].onclick = function () {
+                    //window.location.href = "/detail.html"; 当前窗口打开
+                    // 在跳转之前, 把点击学员的id\传到详细页
+
+                    window.open("detail.html?id=" + this.getAttribute("studentId") );
+                }
+            }
+        }
+
+       function bindEvent() {
+            page.onclick = function (e) {
+               var e =e || window.event;
+               var target = e.target || e.srcElement;
+               var tarTag = target.tagName.toUpperCase();
+               var tarInn = target.innerHTML;
+               // 事件源分俩种:
+               //-->如果点击的是span: FIRST PREV NEXT LAST
+               if(tarTag == "SPAN"){
+                   if(tarInn == "FIRST"){
+                       if (n === 1){
+                           return;
+                       }
+                       n = 1;
+                   }
+                   if(tarInn == "LAST"){
+                       if (n === total){
+                           return;
+                       }
+                       n = total;
+                   }
+                   if(tarInn == "PREV"){
+                       if (n === 1){
+                           return;
+                       }
+                       n--;
+                   }
+                   if(tarInn == "NEXT"){
+                       if (n === total){
+                           return;
+                       }
+                       n++;
+                   }
+               }
+               //如果点击的是li
+               if (tarTag == "LI"){
+                   if(n === parseFloat(tarInn)){
+                       return;
+                   }
+                   n = parseFloat(tarInn);
+               }
+               // 如果点击的是iunput
+               if (tarTag == "INPUT"){
+                   return
+               }
+
+               //-->目前不管点击的是谁:我们都获取到了最新的ｎ的值，重新发送请求，重新半丁结果
+               console.log(n);
+               sendAJAX();
+           };
+            btn.onclick =function (e) {
+                var e  = e || window.event;
+                    var val = parseFloat(numInp.value.replace(/^ +| +$/,""));//去除字符串首位空壳
+                    if(isNaN(val)){
+                        //-->非有效数字
+                        numInp.value = n;
+                        return
+                    }
+                    val = Math.round(val);
+                    if(val < 1){
+                        n = 1;
+                    }else if(val > total){
+                        n = total;
+                    } else {
+                        n  = val;
+                    }
+
+                    sendAJAX()
+
+
+            };
+            numInp.onkeyup = function (e) {
+               var e  = e || window.event;
+               if(e.keyCode === 13){// 按下了  enter 键
+                   var val = parseFloat(numInp.value.replace(/^ +| +$/,""));//去除字符串首位空壳
+                   if(isNaN(val)){
+                       //-->非有效数字
+                       numInp.value = n;
+                       return
+                   }
+
+                   val = Math.round(val);
+                    if(val < 1){
+                        n = 1;
+                    }else if(val > total){
+                       n = total;
+                   } else {
+                        n  = val;
+                    }
+
+                   sendAJAX()
+
+               }
+           }
+       }
+        //-->模块入口
+
+        function init() {
+            sendAJAX();
+            bindEvent();
+        /*    bindLink();*/
+        }
+
+        return {init: init}
+    })();
+    pageModule.init()
+</script>
+</body>
+</html>

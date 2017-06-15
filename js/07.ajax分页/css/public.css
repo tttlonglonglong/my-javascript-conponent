@@ -1,0 +1,138 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+input{
+  outline: none;
+}
+ul,li{
+  list-style: none;
+}
+html, body{
+  width: 100%;
+  color: #000000;
+  font-size: 14px;
+  font-family: "\5FAE\8F6F\96C5\9ED1", Helvetica, sans-serif;
+  overflow-x: hidden;
+  -webkit-user-select: none;/*快速点击不会选中*/
+}
+
+/*index*/
+.box{
+  margin: 20px auto;
+  padding: 20px;
+  width: 800px;
+  border: 2px solid green;
+  text-align: center;
+}
+.box h2{
+  width: 800px;
+  height: 35px;
+  line-height: 35px;
+  color: #fff;
+  font-size: 16px;
+  background-color: green;
+}
+.box h2 span{
+  float: left;
+ /* display: inline-block;行内块元素间隙有大小*/
+  width: 200px;
+  height: 100%;
+  text-align: center;
+}
+
+.con{
+  height: 300px;
+}
+.con li{
+  height: 30px;
+  line-height: 30px;
+  cursor: pointer;
+}
+.con li span{
+  float: left;
+  /* display: inline-block;行内块元素间隙有大小*/
+  width: 200px;
+  height: 100%;
+  text-align: center;
+}
+/*!*使用css3属性实现隔行变色*/
+.con li:nth-child(even){
+  background-color: #eee;
+
+}
+.con li:hover{
+  background-color: #e0f2be;
+
+}
+
+/*pageContral*/
+.page{
+  display: inline-block;
+  margin-top: 20px;
+  height: 22px;
+  line-height: 22px;
+}
+.page span,.page ul,.page input, .page li {
+  float: left;
+  margin: 0 3px;
+  height: 20px;
+  line-height: 20px;
+  font-size: 12px;
+  text-align: center;
+  border: 1px solid green;
+  cursor: pointer;
+}
+.page ul{
+  border: none;
+}
+.page span,.page input{
+  width: 45px;
+
+}
+.page span:hover{
+  background-color: orange;
+}
+.page li {
+  width: 20px;
+}
+.page li.bg {
+  color: #fff;
+  background-color: orange;
+}
+.page #btn  {
+  width: 30px;
+  background-color: #fff;
+}
+.page #btn:hover{
+  background-color: orange;
+}
+  /*detail*/
+.box2{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -100px;
+  margin-left: -100px;
+  width: 200px;
+  height: 200px;
+  border: 2px solid green;
+}
+.box2 li{
+  height: 50px;
+  line-height: 50px;
+}
+.box2 li:nth-child(even){
+  background-color: #EEEEEE;
+}
+.box2 li span{
+  float: left;
+}
+.box2 li span:nth-child(1){
+  width: 100px;
+  text-align: center;
+}
+.box2 li span:nth-child(2){
+  width: 100px;
+  text-align: center;
+}
